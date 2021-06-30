@@ -1,0 +1,2 @@
+rootProject.name = "EMQ_CAMERA"
+include ':app'
