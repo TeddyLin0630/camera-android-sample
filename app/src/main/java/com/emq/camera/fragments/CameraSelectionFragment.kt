@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,17 +13,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.emq.camera.CameraViewModel
 import com.emq.camera.MainActivity
 import com.emq.camera.R
 import com.emq.camera.databinding.FragmentCameraSelectionBinding
+import com.emq.camera.fragments.GalleryFragment.Companion.BUNDLE_PICTURE_PATH
 import com.emq.camera.utils.BitmapUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 const val PERMISSIONS_REQUEST_CODE = 10
 val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
@@ -32,8 +34,7 @@ val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 class CameraSelectionFragment : Fragment() {
     private var _binding: FragmentCameraSelectionBinding? = null
     private val binding get() = _binding!!
-    private val args: CameraSelectionFragmentArgs by navArgs()
-    private var imageUri: Uri? = null
+    private val viewModel: CameraViewModel by viewModel()
     private val getContent =
         registerForActivityResult(ActivityResultContracts.TakePicture()) {
             if (it) {
@@ -56,6 +57,14 @@ class CameraSelectionFragment : Fragment() {
             // Request camera-related permissions
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         }
+        setFragmentResultListener(GalleryFragment.REQUEST_KEY) { requestKey, result ->
+            if (requestKey == GalleryFragment.REQUEST_KEY && !result.getString(BUNDLE_PICTURE_PATH)
+                    .isNullOrEmpty()
+            ) {
+                viewModel.localPicturePath = result.getString(BUNDLE_PICTURE_PATH) ?: ""
+                loadPreviewPicture()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,18 +76,34 @@ class CameraSelectionFragment : Fragment() {
         binding.btnOpenCameraLocal.setOnClickListener {
             navigateToCamera()
         }
+        loadPreviewPicture()
+    }
 
-        args.picturePath?.let {
-            Glide.with(binding.imgCamera)
-                .load(it)
-                .fitCenter()
-                .into(binding.imgCamera)
+    private fun loadPreviewPicture() {
+        when {
+            viewModel.localPicturePath.isNotEmpty() -> {
+                Glide.with(binding.imgCamera)
+                    .load(viewModel.localPicturePath)
+                    .fitCenter()
+                    .into(binding.imgCamera)
+                return
+            }
+            viewModel.outsidePicturePath != null -> {
+                Glide.with(binding.imgCamera)
+                    .load(viewModel.outsidePicturePath)
+                    .fitCenter()
+                    .into(binding.imgCamera)
+                return
+            }
+            else -> {
+                /*do nothing*/
+            }
         }
     }
 
     private fun launchTakePhoto() {
         lifecycleScope.launch {
-            imageUri = FileProvider.getUriForFile(
+            viewModel.outsidePicturePath = FileProvider.getUriForFile(
                 requireContext(),
                 "${requireContext().packageName}.provider",
                 MainActivity.createFile(
@@ -87,7 +112,7 @@ class CameraSelectionFragment : Fragment() {
                     MainActivity.PHOTO_EXTENSION
                 )
             )
-            getContent.launch(imageUri)
+            getContent.launch(viewModel.outsidePicturePath)
         }
     }
 
@@ -124,7 +149,7 @@ class CameraSelectionFragment : Fragment() {
             var rotatedBitmap: Bitmap?
             withContext(Dispatchers.IO) {
                 rotatedBitmap =
-                    imageUri?.let { uri ->
+                    viewModel.outsidePicturePath?.let { uri ->
                         BitmapUtils.handleSamplingAndRotationBitmap(requireContext(), uri)
                     }
             }

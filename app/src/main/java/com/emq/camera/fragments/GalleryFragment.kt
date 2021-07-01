@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -80,9 +82,18 @@ class GalleryFragment internal constructor() : Fragment() {
         }
         binding.btnYes.setOnClickListener {
             if (!mediaList.first().absolutePath.isNullOrEmpty()) {
+                setFragmentResult(
+                    REQUEST_KEY,
+                    bundleOf(BUNDLE_PICTURE_PATH to mediaList.first().absolutePath)
+                )
                 Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                    .navigate(GalleryFragmentDirections.actionGalleryToPermission(mediaList.first().absolutePath))
+                    .popBackStack(R.id.camera_selection_fragment, false)
             }
         }
+    }
+
+    companion object {
+        const val REQUEST_KEY = "GalleryFragment"
+        const val BUNDLE_PICTURE_PATH = "picture_path"
     }
 }

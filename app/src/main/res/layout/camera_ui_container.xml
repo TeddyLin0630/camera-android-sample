@@ -7,17 +7,30 @@
     android:layoutDirection="ltr">
 
     <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="@dimen/round_button_small"
+        android:layout_height="@dimen/round_button_small"
+        android:layout_marginStart="@dimen/margin_xsmall"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/back_button_alt"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_back" />
+
+    <ImageButton
         android:id="@+id/camera_switch_button"
-        android:layout_width="@dimen/round_button_medium"
-        android:layout_height="@dimen/round_button_medium"
-        android:layout_marginStart="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_xlarge"
+        android:layout_width="@dimen/round_button_small"
+        android:layout_height="@dimen/round_button_small"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:layout_marginTop="@dimen/margin_small"
         android:background="@android:color/transparent"
         android:contentDescription="@string/switch_camera_button_alt"
         android:padding="@dimen/spacing_small"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_switch" />
 
     <ImageButton

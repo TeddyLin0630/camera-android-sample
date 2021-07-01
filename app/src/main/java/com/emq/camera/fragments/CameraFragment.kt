@@ -122,9 +122,7 @@ class CameraFragment : Fragment() {
         // Make sure that all permissions are still present, since the
         // user could have removed them while the app was in paused state.
         if (!CameraSelectionFragment.hasPermissions(requireContext())) {
-            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
-                CameraFragmentDirections.actionCameraToPermission(null)
-            )
+            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigateUp()
         }
     }
 
@@ -345,6 +343,10 @@ class CameraFragment : Fragment() {
             }?.maxOrNull()?.let {
                 setGalleryThumbnail(Uri.fromFile(it))
             }
+        }
+
+        uiCameraBinding?.btnBack?.setOnClickListener {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container).popBackStack()
         }
 
         // Listener for button used to capture photo
