@@ -1,12 +1,21 @@
 # emq-camera-android
  
  
- A module implements cameraX libs. 
- Common solutions.
+ ## A module implements cameraX libs. 
+ 
+ Most popular common solutions in this project.
+ 
  There are some functions:
- 1.Scan QR code
- 2.Analyze QR code context
- 3.Preview
- 4.Photo Capture
- 5.Gallery
- It's independent. Easy use to apply to other project. Speed up developing.
+ 
+ 
+ - Scan QR code
+ 
+ - Analyze QR code context
+ 
+ - Preview
+ 
+ - Photo Capture
+ 
+ - Gallery
+ 
+ **It's independent. Easy use to apply to other project. Speed up developing.**
