@@ -1,7 +1,7 @@
-# emq-camera-android
+# camera-android-sample
  
  
- ## A module implements cameraX libs. 
+ ### A module implements cameraX libs. 
  
  Most popular common solutions in this project.
  
